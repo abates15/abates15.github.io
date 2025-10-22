@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Addison Bates | Home</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- CSS Reset --- */
+        :root {
+            --primary-color: #005A9C; /* A professional blue, like a UNL blue */
+            --secondary-color: #f0f2f5; /* Light grey background */
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --header-font: 'Montserrat', sans-serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--body-font);
+            line-height: 1.6;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--header-font);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        section {
+            padding: 3rem 0;
+        }
+
+        /* --- Header / Hero Section --- */
+        #hero {
+            background: var(--primary-color);
+            color: white;
+            padding: 5rem 1rem;
+            text-align: center;
+        }
+
+        #hero h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        #hero .subtitle {
+            font-size: 1.3rem;
+            font-weight: 400;
+            font-family: var(--body-font);
+            margin-bottom: 0.5rem;
+        }
+
+        #hero .pronouns {
+            font-size: 1rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* --- About Section --- */
+        #about {
+            background-color: var(--card-bg);
+        }
+
+        #about p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 750px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        /* --- Projects Section --- */
+        #projects {
+            background-color: var(--secondary-color);
+        }
+
+        #project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden; /* Ensures border-radius is respected */
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .project-card .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .project-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .project-card p {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-card .card-footer {
+            padding: 1rem 1.5rem;
+            background-color: #fafafa;
+            border-top: 1px solid #eee;
+        }
+        
+        .project-card a {
+            text-decoration: none;
+            color: white;
+            background: var(--primary-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+
+        .project-card a:hover {
+            background-color: #004a80; /* Darker blue */
+        }
+
+        /* --- Contact Section --- */
+        #contact {
+            background-color: var(--card-bg);
+            text-align: center;
+        }
+
+        #contact p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .social-links li {
+            display: inline-block;
+            margin: 0 1rem;
+        }
+
+        .social-links a {
+            font-size: 2.5rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #333;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="hero">
+        <h1>Addison Bates</h1>
+        <p class="pronouns">(She/Her)</p>
+        <p class="subtitle">Student at University of Nebraska-Lincoln</p>
+        <p class="location">Journalism, Global Studies & Web App Creator</p>
+    </header>
+
+    <section id="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>
+                I am currently attending the University of Nebraska-Lincoln studying Journalism and Global Studies. I leverage strong collaboration and project management skills, refined through academic projects and professional skills. My customer service background has instilled in me a commitment to problem solving, and clear communication, ensuring positive outcomes for clients and teams.
+                <br><br>
+                I am looking for opportunities where I can leverage my previously acquired skills while contributing to an environment where continuous professional development is encouraged. This website serves as my personal collection of web apps and digital projects as I explore development alongside my studies.
+            </p>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <h2>My Web Apps</h2>
+            <div id="project-grid">
+
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Project Title 1</h3>
+                        <p>A brief description of what this app does, what tech it uses (like HTML, CSS, JavaScript), and what its purpose is.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn">View App</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Project Title 2</h3>
+                        <p>This is another one of my projects. It's a great tool for demonstrating a different skill or interest.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn">View App</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="card-content">
+                        <h3>Coming Soon</h3>
+                        <p>I'm always working on new things. Check back soon for my next project!</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn" style="background-color: #aaa; cursor: not-allowed;">Coming Soon</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>Connect With Me</h2>
+            <p>Feel free to reach out or explore my other profiles.</p>
+            <ul class="social-links">
+                <li>
+                    <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="mailto:your-email@example.com" aria-label="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Addison Bates. Built with GitHub Pages.</p>
+    </footer>
+
+</body>
+</html>
