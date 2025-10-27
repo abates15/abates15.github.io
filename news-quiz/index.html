@@ -6,6 +6,8 @@
     <title>Daily Nebraskan Halloween Quiz</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Confetti Library (for scores 4/5 and 5/5) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
         /* A little custom CSS for the Daily Nebraskan red */
         :root {
@@ -80,6 +82,21 @@
     </div>
 
     <script>
+        // --- Confetti Function ---
+        /**
+         * Launches a burst of confetti across the screen.
+         */
+        function launchConfetti() {
+            // Check if the confetti function from the library is available
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 150,
+                    spread: 90,
+                    origin: { y: 0.6 } // Start slightly above the middle
+                });
+            }
+        }
+
         // --- Question Database ---
         // All 20 questions are stored here
         const allQuestions = [
@@ -323,6 +340,9 @@
             
             options.forEach(option => {
                 const button = document.createElement('button');
+                // For Multiple Choice, strip the option prefix (A), B), etc) from the text for comparison purposes
+                const cleanOptionText = option.split(') ').length > 1 ? option.split(') ')[1].trim() : option;
+
                 button.textContent = option;
                 button.classList.add(
                     'w-full', 'text-left', 'p-4', 'rounded-lg', 'border-2', 'border-gray-300', 
@@ -336,8 +356,8 @@
 
         /**
          * Handles the user's answer selection.
-         * @param {string} selectedAnswer - The answer the user clicked.
-         * @param {string} correctAnswer - The correct answer for the question.
+         * @param {string} selectedAnswer - The full option string (e.g., "A) A ghost").
+         * @param {string} correctAnswer - The correct answer string (e.g., "A) A ghost" or "True").
          * @param {HTMLElement} clickedButton - The button element that was clicked.
          */
         function selectAnswer(selectedAnswer, correctAnswer, clickedButton) {
@@ -345,7 +365,7 @@
             const allButtons = answerButtonsContainer.querySelectorAll('button');
             allButtons.forEach(btn => {
                 btn.disabled = true;
-                // Highlight the correct answer
+                // Highlight the correct answer button
                 if (btn.textContent === correctAnswer) {
                     btn.classList.add('correct-answer');
                 }
@@ -402,9 +422,13 @@
                 summaryMessage = "Better luck next time! Time to re-read the DN.";
             }
             scoreSummary.textContent = summaryMessage;
+
+            // --- Launch Confetti for high scores (4/5 or 5/5) ---
+            if (percentage >= 80) {
+                launchConfetti();
+            }
         }
 
     </script>
 </body>
 </html>
-
