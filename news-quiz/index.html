@@ -90,8 +90,8 @@
             // Check if the confetti function from the library is available
             if (typeof confetti !== 'undefined') {
                 confetti({
-                    particleCount: 150,
-                    spread: 90,
+                    particleCount: 300, // Increased for a bigger burst
+                    spread: 120,    // Increased spread
                     origin: { y: 0.6 } // Start slightly above the middle
                 });
             }
@@ -412,14 +412,12 @@
             
             if (percentage === 100) {
                 summaryMessage = "Perfect score! You're a costume expert!";
-            } else if (percentage >= 80) {
+            } else if (percentage >= 80) { // 4/5
                 summaryMessage = "Great job! You really know your trends.";
-            } else if (percentage >= 60) {
+            } else if (percentage >= 60) { // 3/5
                 summaryMessage = "Not bad! You've been paying attention.";
-            } else if (percentage >= 40) {
-                summaryMessage = "Good try! Some of those were tricky.";
-            } else {
-                summaryMessage = "Better luck next time! Time to re-read the DN.";
+            } else { // Less than 3/5 (2/5, 1/5, 0/5)
+                summaryMessage = "You suck 👎 Better luck next time! Time to re-read the DN. 👎";
             }
             scoreSummary.textContent = summaryMessage;
 
