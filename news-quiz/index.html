@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Nebraskan Halloween Quiz</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A little custom CSS for the Daily Nebraskan red */
+        :root {
+            --dn-red: #D00000;
+        }
+        .bg-dn-red {
+            background-color: var(--dn-red);
+        }
+        .hover\:bg-dn-red-dark:hover {
+            background-color: #a00000;
+        }
+        .text-dn-red {
+            color: var(--dn-red);
+        }
+        .border-dn-red {
+            border-color: var(--dn-red);
+        }
+        .correct-answer {
+            background-color: #22c55e !important; /* Tailwind green-500 */
+            border-color: #16a34a !important; /* Tailwind green-600 */
+            color: white !important;
+        }
+        .wrong-answer {
+            background-color: #ef4444 !important; /* Tailwind red-500 */
+            border-color: #dc2626 !important; /* Tailwind red-600 */
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-lg mx-auto bg-white rounded-xl shadow-2xl p-6 sm:p-10">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-dn-red">Daily Nebraskan</h1>
+            <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800">Halloween Costume Quiz</h2>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <p class="text-lg text-gray-700 mb-6">Test your knowledge of this year's Halloween trends based on articles from the Daily Nebraskan. You'll get 5 random questions.</p>
+            <button id="start-btn" class="w-full bg-dn-red text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-dn-red-dark transition-all duration-300 transform hover:scale-105">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Screen (Hidden by default) -->
+        <div id="quiz-screen" class="hidden">
+            <div id="quiz-header" class="mb-4 text-center">
+                <p id="question-counter" class="text-lg font-semibold text-dn-red"></p>
+            </div>
+            <div id="question-container" class="mb-6">
+                <p id="question-text" class="text-xl sm:text-2xl font-medium text-gray-900 mb-6 min-h-[100px]"></p>
+                <div id="answer-buttons" class="grid grid-cols-1 gap-4">
+                    <!-- Answer buttons will be dynamically inserted here -->
+                </div>
+            </div>
+            <div id="feedback-message" class="text-center text-lg font-medium mt-4 min-h-[30px]"></div>
+        </div>
+
+        <!-- Results Screen (Hidden by default) -->
+        <div id="results-screen" class="hidden text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
+            <p id="score-text" class="text-5xl font-bold text-dn-red mb-6"></p>
+            <p id="score-summary" class="text-xl text-gray-700 mb-8"></p>
+            <button id="restart-btn" class="w-full bg-dn-red text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-dn-red-dark transition-all duration-300 transform hover:scale-105">
+                Play Again
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Question Database ---
+        // All 20 questions are stored here
+        const allQuestions = [
+          {
+            "question": "According to the article, the weekend before or after Halloween is often referred to as “Halloweekend” by college students.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "Which trio costume does the author of the first article (sources 1-44) feel was a one-year trend that is now overdone?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) The Three Musketeers",
+              "B) The Powerpuff Girls",
+              "C) Kiss, Marry, Kill",
+              "D) Ghosts, goblins, and werewolves"
+            ],
+            "answer": "C) Kiss, Marry, Kill"
+          },
+          {
+            "question": "The author (sources 1-44) wants to see *more* angel and devil costumes because they are easy classics.",
+            "type": "True/False",
+            "answer": "False"
+          },
+          {
+            "question": "As an alternative to an angel costume, the first author suggests dressing as:",
+            "type": "Multiple Choice",
+            "options": [
+              "A) A ghost",
+              "B) A witch",
+              "C) A fairy",
+              "D) A vampire"
+            ],
+            "answer": "A) A ghost"
+          },
+          {
+            "question": "The first author is a self-proclaimed 'Labubu hater' and is not looking forward to seeing those costumes.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "The first author describes the common college guy costume of wearing a jersey as 'boring and lazy'.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "What costume did the first author wear last year, which they felt was niche?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) Carmy from 'The Bear'",
+              "B) Blair Waldorf from 'Gossip Girl'",
+              "C) Sabrina Carpenter in the 'Tears' music video",
+              "D) Priscilla Presley in a black and white polka dot set"
+            ],
+            "answer": "D) Priscilla Presley in a black and white polka dot set"
+          },
+          {
+            "question": "The first author uses Pinterest and TikTok to help brainstorm costume ideas.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "Which of these is *NOT* mentioned as an 'iconic artist' costume idea by the first author?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) Kendrick Lamar during the Super Bowl",
+              "B) Chappell Roan in the 'Subway' music video",
+              "C) Taylor Swift in an Eras Tour outfit",
+              "D) Charli xcx’s Coachella fit"
+            ],
+            "answer": "C) Taylor Swift in an Eras Tour outfit"
+          },
+          {
+            "question": "According to the second article (sources 45-72), what two simple items are needed for a Steve from 'Minecraft' costume?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) A teal sweater and jeans",
+              "B) A brown shirt and a toy sword",
+              "C) A white t-shirt and overalls",
+              "D) A hard hat and a pickaxe"
+            ],
+            "answer": "A) A teal sweater and jeans"
+          },
+          {
+            "question": "The movie 'KPop Demon Hunters' is mentioned as a surprise Netflix hit and a strong contender for costumes.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "For a Count Orlok ('Nosferatu') costume, the second article suggests draping what item over black clothing?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) A large faux fur blanket",
+              "B) A long black cape",
+              "C) A white bed sheet",
+              "D) A fishing net"
+            ],
+            "answer": "A) A large faux fur blanket"
+          },
+          {
+            "question": "The costume for Happy Gilmore requires a Boston Bruins jersey and a golf club.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "For a Wednesday Addams costume, the article suggests the white collar could be made out of poster paper.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "For a 'Smiling Friends' duo costume, what 'hardest item to find' is needed for the character Charlie?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) A brown hat",
+              "B) An orange hoodie",
+              "C) A white dress shirt",
+              "D) A pair of jeans"
+            ],
+            "answer": "B) An orange hoodie"
+          },
+          {
+            "question": "If all you have is a full suit, the article suggests dressing as Mark Scout from 'Severance'.",
+            "type": "True/False",
+            "answer": "True"
+          },
+          {
+            "question": "According to the third article (sources 73-103), what are two simple additions that can elevate any costume?",
+            "type": "Multiple Choice",
+            "options": [
+              "A) Wings and a wand",
+              "B) Makeup and accessories",
+              "C) A wig and high heels",
+              "D) A mask and gloves"
+            ],
+            "answer": "B) Makeup and accessories"
+          },
+          {
+            "question": "In the 'angelic makeup' tutorial, blush is applied to the upper cheek, nose, cupid's bow, and...",
+            "type": "Multiple Choice",
+            "options": [
+              "A) Chin",
+              "B) Eyelids",
+              "C) Eyebrow bone",
+              "D) Forehead"
+            ],
+            "answer": "C) Eyebrow bone"
+          },
+          {
+            "question": "For the 'angelic makeup' look, the author used a white eyeshadow to highlight the inner corner of the eye.",
+            "type": "True/False",
+            "answer": "False"
+          },
+          {
+            "question": "The article suggests that Goodwill off of Apples Way and Mid-K Beauty Supply are good local places to find costume accessories.",
+            "type": "True/False",
+            "answer": "True"
+          }
+        ];
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const answerButtonsContainer = document.getElementById('answer-buttons');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        const scoreText = document.getElementById('score-text');
+        const scoreSummary = document.getElementById('score-summary');
+
+        // --- Quiz State ---
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = 5;
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+
+        /**
+         * Starts or restarts the quiz.
+         */
+        function startGame() {
+            // Reset state
+            score = 0;
+            currentQuestionIndex = 0;
+            feedbackMessage.textContent = '';
+            
+            // Select 5 random questions
+            currentQuestions = selectRandomQuestions(allQuestions, totalQuestions);
+            
+            // Show/hide screens
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            // Display the first question
+            displayQuestion();
+        }
+
+        /**
+         * Shuffles an array and returns a new array with the first 'num' items.
+         * @param {Array} array - The array to shuffle.
+         * @param {number} num - The number of items to select.
+         * @returns {Array} A new array with 'num' random items.
+         */
+        function selectRandomQuestions(array, num) {
+            // Create a shuffled copy of the array using Fisher-Yates shuffle
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            // Return the first 'num' questions
+            return shuffled.slice(0, num);
+        }
+
+        /**
+         * Displays the current question and its answer options.
+         */
+        function displayQuestion() {
+            // Clear previous feedback and answer buttons
+            feedbackMessage.textContent = '';
+            answerButtonsContainer.innerHTML = '';
+            
+            // Get the current question object
+            const question = currentQuestions[currentQuestionIndex];
+            
+            // Update UI
+            questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            questionText.textContent = question.question;
+            
+            // Create answer buttons based on question type
+            const options = question.type === 'True/False' ? ['True', 'False'] : question.options;
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add(
+                    'w-full', 'text-left', 'p-4', 'rounded-lg', 'border-2', 'border-gray-300', 
+                    'text-gray-800', 'font-medium', 'hover:bg-gray-100', 'transition-all', 'duration-200'
+                );
+                // Add event listener to check the answer
+                button.addEventListener('click', () => selectAnswer(option, question.answer, button));
+                answerButtonsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles the user's answer selection.
+         * @param {string} selectedAnswer - The answer the user clicked.
+         * @param {string} correctAnswer - The correct answer for the question.
+         * @param {HTMLElement} clickedButton - The button element that was clicked.
+         */
+        function selectAnswer(selectedAnswer, correctAnswer, clickedButton) {
+            // Disable all buttons to prevent multiple answers
+            const allButtons = answerButtonsContainer.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                // Highlight the correct answer
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct-answer');
+                }
+            });
+            
+            // Check if the selected answer is correct
+            if (selectedAnswer === correctAnswer) {
+                score++;
+                feedbackMessage.textContent = 'Correct!';
+                feedbackMessage.classList.add('text-green-600');
+                feedbackMessage.classList.remove('text-red-600');
+            } else {
+                // Highlight the user's wrong answer
+                clickedButton.classList.add('wrong-answer');
+                feedbackMessage.textContent = `Wrong! The correct answer was: ${correctAnswer}`;
+                feedbackMessage.classList.add('text-red-600');
+                feedbackMessage.classList.remove('text-green-600');
+            }
+            
+            // Move to the next question or show results after a delay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < totalQuestions) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }, 2000); // 2-second delay to show feedback
+        }
+
+        /**
+         * Displays the final score and results.
+         */
+        function showResults() {
+            // Show/hide screens
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            // Display score
+            scoreText.textContent = `${score} / ${totalQuestions}`;
+            
+            let summaryMessage = '';
+            const percentage = (score / totalQuestions) * 100;
+            
+            if (percentage === 100) {
+                summaryMessage = "Perfect score! You're a costume expert!";
+            } else if (percentage >= 80) {
+                summaryMessage = "Great job! You really know your trends.";
+            } else if (percentage >= 60) {
+                summaryMessage = "Not bad! You've been paying attention.";
+            } else if (percentage >= 40) {
+                summaryMessage = "Good try! Some of those were tricky.";
+            } else {
+                summaryMessage = "Better luck next time! Time to re-read the DN.";
+            }
+            scoreSummary.textContent = summaryMessage;
+        }
+
+    </script>
+</body>
+</html>
+
