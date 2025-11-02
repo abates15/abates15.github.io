@@ -1,7 +1,14 @@
 // --- Game Data ---
+// Costume names are sourced from the Daily Nebraskan articles:
 const costumeNames = [
-    "Angel", "Devil", "Witch", "Priscilla Presley",
-    "Lifegaurd", "Wednesday", "Labubu", "Happy Gilmore"
+    "Witch",
+    "Ghost",
+    "Devil",
+    "Angel",
+    "Lifeguard",
+    "Pilot",
+    "Priscilla Presley", // Based on the movie "Priscilla" reference
+    "Happy Gilmore"      // Based on the film of the same name
 ];
 // Duplicate for 8 pairs = 16 cards
 const gameCards = [...costumeNames, ...costumeNames];
