@@ -1,5 +1,4 @@
 // --- Game Data ---
-// Costume names are sourced from the Daily Nebraskan articles:
 const costumeNames = [
     "Witch",
     "Ghost",
@@ -7,11 +6,12 @@ const costumeNames = [
     "Angel",
     "Lifeguard",
     "Pilot",
-    "Priscilla Presley", // Based on the movie "Priscilla" reference
-    "Happy Gilmore"      // Based on the film of the same name
+    "Priscilla Presley", 
+    "Happy Gilmore"      
 ];
 // Duplicate for 8 pairs = 16 cards
 const gameCards = [...costumeNames, ...costumeNames];
+const halloweenEmojis = ["🎃", "👻", "🦇", "🕸️", "🕷️", "🍬"]; // Emojis for the card backs
 
 // --- DOM Elements ---
 const landingPage = document.getElementById('landing-page');
@@ -22,9 +22,9 @@ const playAgainButton = document.getElementById('play-again-button');
 const gameBoard = document.getElementById('game-board');
 
 // --- Game State Variables ---
-let flippedCards = []; // Stores the two cards currently flipped
-let matchCount = 0;    // Tracks the number of pairs found
-let canFlip = true;    // Controls card clicking while checking a match
+let flippedCards = []; 
+let matchCount = 0;    
+let canFlip = true;    
 
 // --- Functions ---
 
@@ -43,21 +43,22 @@ function shuffle(array) {
  * Renders the cards onto the game board.
  */
 function createBoard() {
-    // Clear the board before creating new cards
     gameBoard.innerHTML = '';
-    
-    // Shuffle the cards
     shuffle(gameCards);
 
-    // Create and append the card elements
     gameCards.forEach((costume, index) => {
+        // Select a random emoji for the card back
+        const randomEmoji = halloweenEmojis[Math.floor(Math.random() * halloweenEmojis.length)];
+        
         const cardElement = document.createElement('div');
         cardElement.classList.add('card');
         cardElement.dataset.costume = costume;
         cardElement.dataset.index = index;
+        
+        // === UPDATED: Card Back now includes an emoji ===
         cardElement.innerHTML = `
             <div class="card-inner">
-                <div class="card-back">DN</div>
+                <div class="card-back">${randomEmoji} DN</div>
                 <div class="card-front">${costume}</div>
             </div>
         `;
@@ -66,6 +67,9 @@ function createBoard() {
         gameBoard.appendChild(cardElement);
     });
 }
+
+// ... (rest of the script.js functions: handleCardClick, checkForMatch, resetGame, showScreen, showGameScreen, showWinScreen)
+// The rest of the logic remains the same.
 
 /**
  * Handles the click event on a card.
