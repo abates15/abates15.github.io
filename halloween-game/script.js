@@ -55,7 +55,7 @@ function createBoard() {
         cardElement.dataset.costume = costume;
         cardElement.dataset.index = index;
         
-        // === UPDATED: Card Back now includes an emoji ===
+        // Card Back now includes an emoji
         cardElement.innerHTML = `
             <div class="card-inner">
                 <div class="card-back">${randomEmoji} DN</div>
@@ -67,9 +67,6 @@ function createBoard() {
         gameBoard.appendChild(cardElement);
     });
 }
-
-// ... (rest of the script.js functions: handleCardClick, checkForMatch, resetGame, showScreen, showGameScreen, showWinScreen)
-// The rest of the logic remains the same.
 
 /**
  * Handles the click event on a card.
@@ -104,9 +101,13 @@ function checkForMatch() {
     const [card1, card2] = flippedCards;
     
     if (card1.dataset.costume === card2.dataset.costume) {
-        // Match found!
+        // MATCH FOUND: Cards stay flipped!
+        // We remove 'flipped' and add 'matched'. 'matched' keeps the card face-up and disables clicking.
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
         card1.classList.add('matched');
         card2.classList.add('matched');
+        
         matchCount++;
 
         // Check for win condition
