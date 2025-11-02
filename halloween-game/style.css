@@ -1,43 +1,108 @@
 body {
     font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.screen {
+    display: none; /* Hide all screens by default */
     text-align: center;
-    background-color: #f4f4f9;
     padding: 20px;
-    margin: 0 auto;
+}
+
+.screen.active {
+    display: block; /* Show the active screen */
+}
+
+/* --- Game Board Styling --- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for 16 cards (4x4) */
+    gap: 10px;
     max-width: 600px;
+    margin-top: 20px;
 }
 
-header {
+.card {
+    background-color: #333; /* Card back color */
+    color: white;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transform: rotateY(0deg);
+    transition: transform 0.5s;
+    user-select: none; /* Prevent text selection */
+    perspective: 1000px; /* For 3D flip effect */
+    position: relative;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.card-back {
+    background-color: #A30000; /* Daily Nebraskan red/Husker red */
+    transform: rotateY(0deg);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.card-front {
+    background-color: #fff; /* Card face color */
+    color: #333;
+    transform: rotateY(180deg);
+    border: 2px solid #A30000;
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card.matched .card-inner {
+    transform: rotateY(180deg);
+    pointer-events: none; /* Matched cards can't be clicked */
+}
+
+/* --- Win Screen Styling --- */
+#win-screen h2 {
+    color: #A30000;
+    font-size: 3em;
+    margin-bottom: 5px;
+}
+#confetti {
+    font-size: 3em;
     margin-bottom: 20px;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
 }
-
-#costume-options {
-    text-align: left;
-    padding: 15px;
-    border: 1px solid #ddd;
-    background-color: white;
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin: 8px 0;
-}
-
 button {
     padding: 10px 20px;
-    font-size: 1.1em;
-    background-color: #d9534f;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #A30000;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-}
-
-#result-message {
-    margin-top: 25px;
-    padding: 15px;
-    border: 2px dashed #333;
+    margin-top: 10px;
 }
