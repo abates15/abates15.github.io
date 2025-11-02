@@ -1,261 +1,39 @@
-import random
-import time
-import sys
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloweekend Quest</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎃 Halloweekend Quest 🧠</h1>
+        <h2>A Daily Nebraskan Learning Game</h2>
 
-# --- ANSI Color Codes for Terminal Output ---
-class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+        <div id="board" class="board-grid">
+            </div>
 
-# --- GAME DATA & BOARD SETUP ---
+        <div id="message-panel">
+            <p id="message" class="message-text">Press START to begin your Halloweekend Quest!</p>
+            <p id="player-status" class="status-text">Current Position: Space 1 / 12</p>
+        </div>
 
-# Board spaces and data (with facts from the Daily Nebraskan article)
-# Source: uploaded:Article Costumes.docx
-BOARD_SPACES = [
-    {"name": "START", "type": "Safe", "icon": "🏡", "color": Color.GREEN, "text": f"{Color.BOLD}Welcome to 'Halloweekend Quest'!{Color.END}", "action": 0},
-    {"name": "FACT 1", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "College students celebrate 'Halloweekend' on the weekend before or after Halloween."},
-    {"name": "FACT 2", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "The 'Kiss, Marry, Kill' trio costume is considered a one-year trend that is now 'overdone' since 2022."},
-    {"name": "SAFE 1", "type": "Safe", "icon": "✨", "color": Color.GREEN, "text": "It's a spooky safe spot! Take a breather."},
-    {"name": "BACK 1", "type": "Penalty", "icon": "💀", "color": Color.RED, "text": f"{Color.RED}{Color.BOLD}A ghost tripped you! Move back 1 space. 👻{Color.END}", "action": -1},
-    {"name": "FACT 3", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "The classic devil and angel duo costume is also considered overdone by 2025."},
-    {"name": "SAFE 2", "type": "Safe", "icon": "✨", "color": Color.GREEN, "text": "You found a secret passage. All clear!"},
-    {"name": "FACT 4", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "To elevate a pirate costume, accessorize with a bandana, body jewelry, hair gems, and fishnet tights."},
-    {"name": "BACK 2", "type": "Penalty", "icon": "💀", "color": Color.RED, "text": f"{Color.RED}{Color.BOLD}You stepped on a cursed patch of grass. Move back 1 space. 🕸️{Color.END}", "action": -1},
-    {"name": "FACT 5", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "For a sustainable Playboy Bunny costume, the Goodwill off of Apples Way in South Lincoln is suggested for accessories."},
-    {"name": "FACT 6", "type": "Fact", "icon": "🧠", "color": Color.CYAN, "text": "A key to elevating makeup is to add highlighter on top of the blush on the eyebrow bone."},
-    {"name": "FINISH", "type": "Win", "icon": "🏆", "color": Color.YELLOW, "text": f"{Color.BOLD}{Color.YELLOW}CONGRATULATIONS! You won the 'Halloweekend Quest' and are a Daily Nebraskan expert!{Color.END}"}
-]
-
-# --- TIC-TAC-TOE FUNCTIONS ---
-
-def get_empty_board():
-    """Returns a new, empty 3x3 board."""
-    return [' '] * 9
-
-def print_tictactoe_board(board):
-    """Prints the current Tic-Tac-Toe board."""
-    # Use BOLD and colors for tokens
-    X = f"{Color.RED}{Color.BOLD}X{Color.END}"
-    O = f"{Color.BLUE}{Color.BOLD}O{Color.END}"
-    
-    # Replace spaces with colored tokens for printing
-    display_board = [i.replace('X', X).replace('O', O) for i in board]
-
-    # Display position numbers for user input
-    pos_map = [f"{Color.DARKCYAN}{i+1}{Color.END}" if board[i] == ' ' else board[i] for i, _ in enumerate(board)]
-    
-    print(f"\n      {pos_map[0]} | {pos_map[1]} | {pos_map[2]} ")
-    print("     ---|---|---")
-    print(f"      {pos_map[3]} | {pos_map[4]} | {pos_map[5]} ")
-    print("     ---|---|---")
-    print(f"      {pos_map[6]} | {pos_map[7]} | {pos_map[8]} \n")
-
-def check_win(board, player):
-    """Checks if the given player has won."""
-    wins = [
-        (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Rows
-        (0, 3, 6), (1, 4, 7), (2, 5, 8),  # Columns
-        (0, 4, 8), (2, 4, 6)             # Diagonals
-    ]
-    for combo in wins:
-        if all(board[i] == player for i in combo):
-            return True
-    return False
-
-def get_available_moves(board):
-    """Returns a list of indices for empty spots."""
-    return [i for i, spot in enumerate(board) if spot == ' ']
-
-def get_player_move(board):
-    """Gets and validates the human player's move."""
-    while True:
-        try:
-            move = input(f"{Color.BOLD}Your move (1-9): {Color.END}")
-            move_index = int(move) - 1
-            if 0 <= move_index <= 8 and board[move_index] == ' ':
-                return move_index
-            else:
-                print(f"{Color.YELLOW}Invalid move. Please choose an empty spot (1-9).{Color.END}")
-        except ValueError:
-            print(f"{Color.YELLOW}Invalid input. Please enter a number from 1 to 9.{Color.END}")
-
-def get_computer_move(board):
-    """Chooses a random available move for the computer."""
-    available = get_available_moves(board)
-    return random.choice(available) if available else None
-
-def play_tictactoe():
-    """Plays Tic-Tac-Toe until the human player wins."""
-    player_token = 'X'
-    computer_token = 'O'
-    
-    print(f"\n{Color.BOLD}{Color.PURPLE}--- 👻 TIC-TAC-TOE GATE ---{Color.END}")
-    print("You must WIN to take your turn! The game repeats until you succeed.")
-    
-    # Loop indefinitely until the player secures a win
-    while True:
-        board = get_empty_board()
-        # Ensure a fair random start for each attempt
-        current_turn = random.choice(['player', 'computer']) 
-        
-        print(f"\n{Color.BOLD}Starting New Game!{Color.END} You are {Color.RED}X{Color.END}. Computer is {Color.BLUE}O{Color.END}.")
-        print(f"First turn: {'You' if current_turn == 'player' else 'The Computer'}")
-        
-        game_over = False
-        while not game_over:
-            print_tictactoe_board(board)
+        <div id="controls">
+            <button id="startButton" onclick="initializeGame()">START GAME</button>
             
-            if current_turn == 'player':
-                move = get_player_move(board)
-                board[move] = player_token
-                
-                if check_win(board, player_token):
-                    print_tictactoe_board(board)
-                    print(f"{Color.GREEN}{Color.BOLD}🎉 YOU WON! Proceed to the roll!{Color.END}")
-                    return # Player wins, exit the function
-                
-                if not get_available_moves(board):
-                    print(f"{Color.YELLOW}It's a draw! No turn for you yet. Starting a new game...{Color.END}")
-                    game_over = True
-                
-                current_turn = 'computer'
-                
-            else: # Computer's turn
-                print("Computer is thinking... (1 second)")
-                time.sleep(1) 
-                
-                move = get_computer_move(board)
-                if move is not None:
-                    board[move] = computer_token
-                    
-                    if check_win(board, computer_token):
-                        print_tictactoe_board(board)
-                        print(f"{Color.RED}❌ The Computer won! Try again for your turn. ❌{Color.END}")
-                        game_over = True
-                        
-                    elif not get_available_moves(board):
-                        print(f"{Color.YELLOW}It's a draw! No turn for you yet. Starting a new game...{Color.END}")
-                        game_over = True
-                        
-                    current_turn = 'player'
-                else:
-                    game_over = True # Should only be hit on a draw if not caught above
-# --- BOARD GAME FUNCTIONS ---
+            <div id="ttt-area" class="hidden">
+                <h3>👻 Tic-Tac-Toe Gate 👻</h3>
+                <p>Win against the computer to earn your dice roll!</p>
+                <div id="ttt-board">
+                    </div>
+            </div>
 
-def roll_dice():
-    """Rolls a random number between 1 and 3."""
-    return random.randint(1, 3)
+            <button id="rollButton" class="hidden" onclick="rollDice()">ROLL DICE (1-3)</button>
+        </div>
 
-def print_board(player_pos):
-    """Prints a visual representation of the game board."""
-    board_str = f"{Color.BOLD}--- BOARD MAP ---{Color.END}\n"
-    total_spaces = len(BOARD_SPACES)
-    
-    for i in range(total_spaces):
-        space = BOARD_SPACES[i]
-        
-        # Determine the display string for the space
-        display_str = f"{space['icon']} {space['name']}"
-        
-        # Apply color based on space type
-        colored_display = f"{space['color']}{display_str}{Color.END}"
-
-        # Highlight player's position
-        if i == player_pos:
-            cell = f"[{colored_display} {Color.BOLD}*YOU*{Color.END}]"
-        else:
-            cell = f"({colored_display})"
-            
-        board_str += cell
-        
-        # Add connectors and wrap the board visually
-        if i < total_spaces - 1:
-            if (i + 1) % 4 == 0:
-                board_str += "\n" + ("=" * 70) + "\n"
-            else:
-                board_str += " --> "
-            
-    print(board_str)
-    print("\n" + f"{Color.BOLD}You are currently on Space {player_pos + 1} of {total_spaces}.{Color.END}")
-    print("=" * 70)
-
-def main():
-    """The main game loop."""
-    current_position = 0 # 0-indexed position
-    total_spaces = len(BOARD_SPACES)
-    
-    print(Color.BOLD + Color.PURPLE + "=" * 70 + Color.END)
-    print(Color.BOLD + Color.PURPLE + "🎃 HALLOWEEKEND QUEST: A DAILY NEBRASKAN LEARNING GAME 🧠".center(70) + Color.END)
-    print(Color.BOLD + Color.PURPLE + "=" * 70 + Color.END)
-    
-    input(f"\n{Color.CYAN}Press Enter to start the Halloweekend Quest...{Color.END}")
-    
-    print_board(current_position)
-    
-    # Main game loop
-    while current_position < total_spaces - 1:
-        
-        # 1. The Tic-Tac-Toe Gate (Pre-roll requirement)
-        print(f"\n{Color.UNDERLINE}--- BEGIN TURN {current_position + 1} / {total_spaces - 1} ---{Color.END}")
-        play_tictactoe() # This loop only exits when the player wins.
-        
-        # 2. The Dice Roll
-        print(f"\n{Color.BOLD}[STEP 2: Roll for Movement (1-3)] {Color.END}")
-        input(f"Press {Color.BOLD}Enter{Color.END} to roll the dice...")
-        dice_roll = roll_dice()
-        print(f"{Color.YELLOW}The dice rolled a... {Color.BOLD}{dice_roll}!{Color.END} You move {dice_roll} space(s).")
-        
-        # Calculate new position
-        new_position = current_position + dice_roll
-        
-        # Check if the player overshot the finish line
-        if new_position >= total_spaces - 1:
-            current_position = total_spaces - 1
-        else:
-            current_position = new_position
-
-        print(f"{Color.GREEN}➡️ Moving to Space {current_position + 1}!{Color.END}")
-        print_board(current_position)
-        
-        # 3. Land on a space and resolve action
-        current_space = BOARD_SPACES[current_position]
-        
-        print(f"\n{Color.BOLD}[STEP 3: Landed on: {current_space['name']} ({current_space['type']})] {Color.END}")
-        print(f"ℹ️ {current_space['text']}")
-
-        if current_space['type'] == 'Penalty':
-            penalty_move = current_space['action']
-            print(f"{Color.RED}OH NO! Penalty: Move back {abs(penalty_move)} space(s).{Color.END}")
-            
-            # Apply penalty, ensuring player doesn't go below Start (index 0)
-            current_position = max(0, current_position + penalty_move)
-            
-            print(f"{Color.RED}New position after penalty: Space {current_position + 1}{Color.END}")
-            print_board(current_position)
-
-        elif current_space['type'] == 'Fact':
-            print(f"{Color.CYAN}✅ Fact learned! Good work, keep advancing.{Color.END}")
-        
-        if current_position < total_spaces - 1:
-            input(f"\n{Color.UNDERLINE}--- Press Enter to continue to the next turn. ---{Color.END}")
-
-    # Game End
-    print("\n" + Color.BOLD + Color.YELLOW + "=" * 70 + Color.END)
-    print(BOARD_SPACES[total_spaces - 1]['text'].center(70))
-    print(Color.BOLD + Color.YELLOW + "=" * 70 + Color.END)
-
-# Standard Python entry point
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print(f"\n{Color.RED}Game interrupted. Goodbye!{Color.END}")
-        sys.exit(0)
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
