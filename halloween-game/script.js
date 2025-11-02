@@ -20,15 +20,18 @@ let tttBoard = Array(9).fill('');
 const PLAYER_TTT = 'X';
 const COMPUTER_TTT = 'O';
 let isTttLocked = false;
+let isDiceRolling = false; // New flag to prevent rolling while TTT is in progress
 
 // --- DOM ELEMENTS ---
-const boardEl = document.getElementById('board');
+const boardPathEl = document.getElementById('board-path');
 const messageEl = document.getElementById('message');
 const statusEl = document.getElementById('player-status');
-const rollButton = document.getElementById('rollButton');
 const tttAreaEl = document.getElementById('ttt-area');
 const tttBoardEl = document.getElementById('ttt-board');
 const startButton = document.getElementById('startButton');
+const diceContainerEl = document.getElementById('dice-container');
+const diceIconEl = document.getElementById('dice-icon');
+const diceClickAreaEl = document.getElementById('dice-click-area');
 
 // --- TIC-TAC-TOE LOGIC ---
 
@@ -75,7 +78,7 @@ function handleTttClick(index) {
     // Player move
     tttBoard[index] = PLAYER_TTT;
     updateTttBoardDisplay();
-    isTttLocked = true; // Lock controls while computer moves
+    isTttLocked = true; 
 
     // Check for Player win
     const winCombo = checkWin(tttBoard, PLAYER_TTT);
@@ -93,21 +96,22 @@ function handleTttClick(index) {
     // Computer move after a short delay
     setTimeout(() => {
         computerMove();
-        isTttLocked = false; // Unlock only after computer move (if game continues)
+        isTttLocked = false; 
     }, 800);
 }
 
 function endTttGame(playerWon, combo = null) {
     isTttLocked = true;
-    rollButton.disabled = false;
     
     if (playerWon === true) {
-        messageEl.textContent = "🎉 YOU WON the Tic-Tac-Toe Gate! Roll the dice!";
-        rollButton.classList.remove('hidden');
+        messageEl.textContent = "🎉 YOU WON the Tic-Tac-Toe Gate! Click the dice to roll!";
+        diceContainerEl.classList.remove('hidden'); // Show dice
+        diceClickAreaEl.style.pointerEvents = 'auto'; // Enable dice click
         tttAreaEl.classList.add('hidden');
         if (combo) {
             combo.forEach(i => tttBoardEl.children[i].classList.add('win-cell'));
         }
+        isDiceRolling = false; // Allow the dice to be rolled
     } else if (playerWon === false) {
         messageEl.textContent = "❌ The computer won! You must try again to roll. New game starting...";
         setTimeout(startTttGame, 2000);
@@ -120,8 +124,9 @@ function endTttGame(playerWon, combo = null) {
 function startTttGame() {
     tttBoard = Array(9).fill('');
     isTttLocked = false;
+    isDiceRolling = true; // Lock dice while TTT is active
+    diceContainerEl.classList.add('hidden');
     tttAreaEl.classList.remove('hidden');
-    rollButton.classList.add('hidden');
     messageEl.textContent = "Win the Tic-Tac-Toe Gate to roll the dice!";
     updateTttBoardDisplay();
 }
@@ -144,31 +149,52 @@ function updateTttBoardDisplay() {
 
 // --- BOARD GAME LOGIC ---
 
+// Map dice number to Font Awesome icon class
+const DICE_ICONS = {
+    1: 'fa-dice-one',
+    2: 'fa-dice-two',
+    3: 'fa-dice-three'
+};
+
 function rollDice() {
-    if (isTttLocked) return;
+    if (isDiceRolling) return; // Prevent clicking while TTT is active or already rolling
+    isDiceRolling = true;
+    diceClickAreaEl.style.pointerEvents = 'none'; // Disable click while rolling
 
-    rollButton.disabled = true;
-    
-    const diceRoll = Math.floor(Math.random() * 3) + 1; // Roll 1-3
-    messageEl.textContent = `The dice rolled a... ${diceRoll}! Moving ${diceRoll} spaces.`;
+    const rollDuration = 1000;
+    const startTime = Date.now();
+    let diceRoll = 0;
 
-    // Move player position
-    let newPosition = playerPos + diceRoll;
-    
-    // Check for overshoot (win)
-    if (newPosition >= BOARD_SPACES.length - 1) {
-        playerPos = BOARD_SPACES.length - 1;
-        updateBoardDisplay();
-        resolveSpaceAction();
-        return; // Game over
-    }
+    // Rolling animation
+    const rollInterval = setInterval(() => {
+        diceRoll = Math.floor(Math.random() * 3) + 1;
+        diceIconEl.className = `fas ${DICE_ICONS[diceRoll]} fa-4x`;
+        if (Date.now() - startTime > rollDuration) {
+            clearInterval(rollInterval);
+            
+            // Final roll result
+            diceIconEl.className = `fas ${DICE_ICONS[diceRoll]} fa-4x`;
+            messageEl.textContent = `The dice rolled a... ${diceRoll}! Moving ${diceRoll} spaces.`;
+            
+            // Move player position
+            let newPosition = playerPos + diceRoll;
+            
+            // Check for overshoot (win)
+            if (newPosition >= BOARD_SPACES.length - 1) {
+                playerPos = BOARD_SPACES.length - 1;
+                updateBoardDisplay();
+                resolveSpaceAction();
+                return; 
+            }
 
-    playerPos = newPosition;
-    
-    setTimeout(() => {
-        updateBoardDisplay();
-        resolveSpaceAction();
-    }, 1000);
+            playerPos = newPosition;
+            
+            setTimeout(() => {
+                updateBoardDisplay();
+                resolveSpaceAction();
+            }, 1000);
+        }
+    }, 100);
 }
 
 function resolveSpaceAction() {
@@ -177,7 +203,7 @@ function resolveSpaceAction() {
     if (currentSpace.type === 'Win') {
         messageEl.textContent = currentSpace.text;
         statusEl.textContent = "GAME OVER!";
-        rollButton.classList.add('hidden');
+        diceContainerEl.classList.add('hidden');
         return;
     }
 
@@ -190,7 +216,7 @@ function resolveSpaceAction() {
         setTimeout(() => {
             messageEl.textContent = `Penalty applied. New spot: ${BOARD_SPACES[playerPos].name}.`;
             updateBoardDisplay();
-            setTimeout(startTurn, 1500); // Start next turn after penalty is resolved
+            setTimeout(startTurn, 1500); 
         }, 1500);
 
     } else if (currentSpace.type === 'Fact') {
@@ -204,26 +230,32 @@ function resolveSpaceAction() {
 }
 
 function updateBoardDisplay() {
-    boardEl.innerHTML = ''; // Clear board
-    BOARD_SPACES.forEach((space, index) => {
-        const spaceEl = document.createElement('div');
-        spaceEl.classList.add('board-space', space.type.toLowerCase());
-        spaceEl.innerHTML = `${space.icon} <br>${space.name}`;
-        
-        if (index === playerPos) {
-            spaceEl.classList.add('player-here');
-        }
-        
-        boardEl.appendChild(spaceEl);
+    if (boardPathEl.children.length === 0) {
+        // Initial setup: create all board elements
+        BOARD_SPACES.forEach((space, index) => {
+            const spaceEl = document.createElement('div');
+            spaceEl.id = `space-${index}`;
+            spaceEl.classList.add('board-space', space.type.toLowerCase());
+            spaceEl.innerHTML = `${space.icon} <br>${space.name}`;
+            boardPathEl.appendChild(spaceEl);
+        });
+    }
+
+    // Update player position
+    document.querySelectorAll('.board-space').forEach(el => {
+        el.classList.remove('player-here');
     });
+
+    const currentPlayerEl = document.getElementById(`space-${playerPos}`);
+    if (currentPlayerEl) {
+        currentPlayerEl.classList.add('player-here');
+    }
     
     statusEl.textContent = `Current Position: Space ${playerPos + 1} / ${BOARD_SPACES.length}`;
 }
 
 function startTurn() {
     messageEl.textContent = "Your turn! Time to face the Tic-Tac-Toe Gate.";
-    rollButton.disabled = true;
-    rollButton.classList.add('hidden');
     startTttGame();
 }
 
@@ -235,5 +267,10 @@ function initializeGame() {
     startTurn();
 }
 
-// Ensure the board is visually set up on page load
-document.addEventListener('DOMContentLoaded', updateBoardDisplay);
+// Initial setup on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Generate empty board on load for display (no player token yet)
+    updateBoardDisplay();
+    // Ensure dice is initially disabled until TTT is won
+    diceClickAreaEl.style.pointerEvents = 'none'; 
+});
