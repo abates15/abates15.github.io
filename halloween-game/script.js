@@ -1,93 +1,44 @@
+// --- Game Data based on DN Articles (The costumes to AVOID) ---
 const BAD_COSTUMES = [
-    "jersey", "devil", "kiss-kill", "labubu", "lifeguard"
+    [cite_start]"jersey",         // "Boring and lazy" [cite: 25]
+    [cite_start]"angel_devil",    // "Overdone" and seen at least 10 times a year [cite: 17, 14]
+    [cite_start]"kiss_kill",      // "One-year trend" that should have ended [cite: 13]
+    [cite_start]"lifeguard"       // Taking the "easy route" [cite: 26]
 ];
-let currentCostume = [];
-const costumeLayer = document.getElementById('costume-layer');
-const messageDisplay = document.getElementById('judgement-message');
 
-// --- Visual & Positioning Data ---
-// **TODO: You MUST fill this with the correct positioning for your images**
-const VISUAL_DATA = {
-    "jersey":       { class: 'shirt', style: 'top: 150px; left: 100px; width: 150px; height: 150px; background-image: url("images/jersey.png");' },
-    "devil":        { class: 'head', style: 'top: 50px; left: 130px; width: 80px; height: 80px; background-image: url("images/devil_horns.png");' },
-    "chappell-roan":{ class: 'full', style: 'top: 150px; left: 100px; width: 150px; height: 250px; background-image: url("images/chappell_roan_dress.png");' },
-    "witch":        { class: 'head', style: 'top: 0px; left: 80px; width: 100px; height: 100px; background-image: url("images/witch_hat.png");' },
-    "fairy":        { class: 'back', style: 'top: 100px; left: 50px; width: 250px; height: 150px; background-image: url("images/fairy_wings.png");' }
-    // Add all other costume IDs here
-};
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.costume-item').forEach(item => {
-        item.addEventListener('click', toggleCostume);
-    });
-    document.getElementById('continue-button').addEventListener('click', checkCostume);
-});
-
-// --- Toggle/Select Costume Function ---
-function toggleCostume(event) {
-    const item = event.target;
-    const itemID = item.id;
-
-    if (currentCostume.includes(itemID)) {
-        // Deselect
-        currentCostume = currentCostume.filter(id => id !== itemID);
-        item.classList.remove('selected');
-    } else {
-        // Select
-        currentCostume.push(itemID);
-        item.classList.add('selected');
-    }
-
-    updateVisuals(); // <-- Call the new function to refresh the character
-}
-
-
-// --- FUNCTION TO REFRESH THE MUMMY'S APPEARANCE ---
-function updateVisuals() {
-    // 1. Clear the costume layer completely
-    costumeLayer.innerHTML = ''; 
-
-    // 2. Loop through all currently selected items
-    currentCostume.forEach(itemID => {
-        const data = VISUAL_DATA[itemID];
-        
-        if (data) {
-            // 3. Create a new div for the costume piece
-            const piece = document.createElement('div');
-            
-            // 4. Assign necessary classes and styles
-            piece.className = `costume-piece ${data.class}`;
-            piece.style.cssText = data.style; // Apply the positioning and image
-            piece.setAttribute('data-id', itemID); // Keep a reference to the item
-            
-            // 5. Add the piece to the costume layer
-            costumeLayer.appendChild(piece);
-        }
-    });
-}
-
-
-// --- The Core Win/Lose Logic Function (Same as before) ---
-function checkCostume() {
-    let hasBadCostume = false;
-
-    // Check if ANY selected item is in the BAD_COSTUMES array
-    for (let item of currentCostume) {
-        if (BAD_COSTUMES.includes(item)) {
-            hasBadCostume = true;
+// --- Main Judgment Function (Triggers when the button is clicked) ---
+function getJudgment() {
+    const costumeRadios = document.getElementsByName('costume');
+    let selectedCostume = null;
+    const resultMessage = document.getElementById('result-message');
+    
+    // 1. Find the selected radio button value
+    for (let radio of costumeRadios) {
+        if (radio.checked) {
+            selectedCostume = radio.value;
             break;
         }
     }
 
-    if (hasBadCostume) {
-        messageDisplay.textContent = "❌ FAIL! 'It’s boring and lazy.' You must choose a better costume to enter the DN party!";
-        messageDisplay.style.color = 'red';
-    } else if (currentCostume.length === 0) {
-        messageDisplay.textContent = "❓ You need to be wearing a costume to enter! Try again.";
-        messageDisplay.style.color = 'orange';
+    if (!selectedCostume) {
+        resultMessage.innerHTML = "<p style='color: orange;'>❓ You must choose a costume before going to the party!</p>";
+        return;
+    }
+
+    // 2. Check the judgment
+    if (BAD_COSTUMES.includes(selectedCostume)) {
+        // LOSE CONDITION
+        resultMessage.innerHTML = `
+            <p style="color: red; font-weight: bold;">❌ JUDGMENT FAILED!</p>
+            <p>The writers have seen that costume too many times. [cite_start]You're told it's **too basic** and to try a more **niche idea** next time. [cite: 8]</p>
+            <p><strong>Try again!</strong></p>
+        `;
     } else {
-        messageDisplay.textContent = "✅ SUCCESS! You picked a unique costume that will 'get you lots of praise.' Welcome to the DN party!";
-        messageDisplay.style.color = 'green';
+        // WIN CONDITION
+        resultMessage.innerHTML = `
+            <p style="color: green; font-weight: bold;">✅ JUDGMENT PASSED!</p>
+            <p>You chose a unique costume! [cite_start]You get **lots of praise** and the writers love that you showed your personality. [cite: 29, 39]</p>
+            <p><strong>Welcome to the Halloweekend party!</strong></p>
+        `;
     }
 }
