@@ -1,54 +1,78 @@
-// --- 1. Define the 'Bad Costumes' that make the player lose ---
 const BAD_COSTUMES = [
-    [cite_start]"jersey",         // Guys in a sports jersey [cite: 23, 24, 25]
-    [cite_start]"devil",          // Devil/Angel duo [cite: 14]
-    [cite_start]"kiss-kill",      // Kiss, Marry, Kill trio [cite: 9]
-    [cite_start]"labubu",         // Labubus [cite: 21, 22]
-    [cite_start]"lifeguard"       // Lifeguard [cite: 26]
-    // Note: You would add 'lifeguard' and 'labubu' as items in the HTML
+    "jersey", "devil", "kiss-kill", "labubu", "lifeguard"
 ];
-
-// Variable to track the IDs of the costume items the player has selected
 let currentCostume = [];
+const costumeLayer = document.getElementById('costume-layer');
+const messageDisplay = document.getElementById('judgement-message');
 
-// --- 2. Set up Event Listeners ---
+// --- Visual & Positioning Data ---
+// **TODO: You MUST fill this with the correct positioning for your images**
+const VISUAL_DATA = {
+    "jersey":       { class: 'shirt', style: 'top: 150px; left: 100px; width: 150px; height: 150px; background-image: url("images/jersey.png");' },
+    "devil":        { class: 'head', style: 'top: 50px; left: 130px; width: 80px; height: 80px; background-image: url("images/devil_horns.png");' },
+    "chappell-roan":{ class: 'full', style: 'top: 150px; left: 100px; width: 150px; height: 250px; background-image: url("images/chappell_roan_dress.png");' },
+    "witch":        { class: 'head', style: 'top: 0px; left: 80px; width: 100px; height: 100px; background-image: url("images/witch_hat.png");' },
+    "fairy":        { class: 'back', style: 'top: 100px; left: 50px; width: 250px; height: 150px; background-image: url("images/fairy_wings.png");' }
+    // Add all other costume IDs here
+};
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Listen for clicks on all costume items
     document.querySelectorAll('.costume-item').forEach(item => {
         item.addEventListener('click', toggleCostume);
     });
-
-    // Listen for the 'Continue' button click
     document.getElementById('continue-button').addEventListener('click', checkCostume);
 });
 
-// --- 3. Toggle/Select Costume Function ---
+// --- Toggle/Select Costume Function ---
 function toggleCostume(event) {
     const item = event.target;
     const itemID = item.id;
 
     if (currentCostume.includes(itemID)) {
-        // Deselect the item
+        // Deselect
         currentCostume = currentCostume.filter(id => id !== itemID);
         item.classList.remove('selected');
-        // You would also remove the visual costume image layer here
     } else {
-        // Select the item
+        // Select
         currentCostume.push(itemID);
         item.classList.add('selected');
-        // You would add the visual costume image layer here
     }
 
-    // Optional: Log the current selection for testing
-    console.log("Current Selection:", currentCostume);
+    updateVisuals(); // <-- Call the new function to refresh the character
 }
 
-// --- 4. The Core Win/Lose Logic Function ---
+
+// --- FUNCTION TO REFRESH THE MUMMY'S APPEARANCE ---
+function updateVisuals() {
+    // 1. Clear the costume layer completely
+    costumeLayer.innerHTML = ''; 
+
+    // 2. Loop through all currently selected items
+    currentCostume.forEach(itemID => {
+        const data = VISUAL_DATA[itemID];
+        
+        if (data) {
+            // 3. Create a new div for the costume piece
+            const piece = document.createElement('div');
+            
+            // 4. Assign necessary classes and styles
+            piece.className = `costume-piece ${data.class}`;
+            piece.style.cssText = data.style; // Apply the positioning and image
+            piece.setAttribute('data-id', itemID); // Keep a reference to the item
+            
+            // 5. Add the piece to the costume layer
+            costumeLayer.appendChild(piece);
+        }
+    });
+}
+
+
+// --- The Core Win/Lose Logic Function (Same as before) ---
 function checkCostume() {
     let hasBadCostume = false;
-    const messageDisplay = document.getElementById('judgement-message');
 
-    // 4a. Check if ANY selected item is in the BAD_COSTUMES array
+    // Check if ANY selected item is in the BAD_COSTUMES array
     for (let item of currentCostume) {
         if (BAD_COSTUMES.includes(item)) {
             hasBadCostume = true;
@@ -56,17 +80,13 @@ function checkCostume() {
         }
     }
 
-    // 4b. Determine and display the outcome
     if (hasBadCostume) {
-        // LOSE CONDITION: Player selected a hated costume
         messageDisplay.textContent = "❌ FAIL! 'It’s boring and lazy.' You must choose a better costume to enter the DN party!";
         messageDisplay.style.color = 'red';
     } else if (currentCostume.length === 0) {
-        // Player needs to wear *something*
         messageDisplay.textContent = "❓ You need to be wearing a costume to enter! Try again.";
         messageDisplay.style.color = 'orange';
     } else {
-        // WIN CONDITION: Player selected an approved costume
         messageDisplay.textContent = "✅ SUCCESS! You picked a unique costume that will 'get you lots of praise.' Welcome to the DN party!";
         messageDisplay.style.color = 'green';
     }
