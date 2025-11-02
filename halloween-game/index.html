@@ -3,42 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DN Halloween Party Dress Up</title>
+    <title>DN Halloweekend Costume Judgment</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
-        <h1>DN Halloween Party Dress Up</h1>
-        <p>Help the mummy choose a costume the writers will approve of! Avoid the 'boring and lazy' ones.</p>
+        <h1>DN Halloweekend Costume Judgment</h1>
+        <p>The **Daily Nebraskan** writers are watching! Choose a costume that is **unique** and **not overdone**.</p>
     </header>
 
     <div id="game-container">
+        <h2>Choose Your Costume for Halloweekend:</h2>
+        
+        <div id="costume-options">
+            <label><input type="radio" name="costume" value="jersey"> 1. Sports Jersey/Athlete (Boring/Lazy)</label><br>
+            <label><input type="radio" name="costume" value="angel_devil"> 2. Angel or Devil (Overdone Classic)</label><br>
+            <label><input type="radio" name="costume" value="kiss_kill"> 3. Kiss, Marry, Kill Trio (Outdated Trend)</label><br>
+            <label><input type="radio" name="costume" value="lifeguard"> 4. Lifeguard (Easy Route)</label><br>
 
-        <div id="costume-choices-left" class="costume-panel">
-            <h3>Bad Costumes (Avoid!)</h3>
-            <div id="jersey" class="costume-item" data-type="bad">Sports Jersey</div>
-            <div id="devil" class="costume-item" data-type="bad">Devil Horns & Wings</div>
-            <div id="kiss-kill" class="costume-item" data-type="bad">Red/Black Dress</div>
+            <label><input type="radio" name="costume" value="minecraft_steve"> 5. 'Minecraft' Steve (Culturally Relevant)</label><br>
+            <label><input type="radio" name="costume" value="iconic_artist"> 6. Iconic Artist Fit (Show Personality)</label><br>
+            <label><input type="radio" name="costume" value="priscilla"> 7. Priscilla Presley Polka Dot Set (Niche Reference)</label><br>
+            <label><input type="radio" name="costume" value="ghost"> 8. Simple Ghost (Approved Alternative)</label><br>
         </div>
-
-        <div id="character-area">
-            <div id="mummy-base"></div>
-            <div id="costume-layer">
-                </div>
-            <div id="judgement-message"></div>
-        </div>
-
-        <div id="costume-choices-right" class="costume-panel">
-            <h3>Good Costumes (Choose!)</h3>
-            <div id="chappell-roan" class="costume-item" data-type="good">Sparkly Dress & Red Wig</div>
-            <div id="witch" class="costume-item" data-type="good">Witch Hat & Broom</div>
-            <div id="fairy" class="costume-item" data-type="good">Fairy Wings & Wand</div>
-        </div>
-
+        
+        <button onclick="getJudgment()">Go to the Party!</button>
+        
+        <div id="result-message">
+            </div>
     </div>
-
-    <button id="continue-button">Continue to be Judged!</button>
 
     <script src="script.js"></script>
 </body>
