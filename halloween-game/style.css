@@ -1,82 +1,43 @@
-/* --- BASE LAYOUT (from previous step) --- */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f4f4f9;
     padding: 20px;
+    margin: 0 auto;
+    max-width: 600px;
 }
 
-#game-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin-top: 20px;
+header {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
 }
 
-.costume-panel {
-    width: 25%;
-    padding: 10px;
-    border: 2px solid #ccc;
+#costume-options {
+    text-align: left;
+    padding: 15px;
+    border: 1px solid #ddd;
     background-color: white;
-    min-height: 400px;
+    margin-bottom: 20px;
 }
 
-/* --- CHARACTER AREA & LAYERING --- */
-#character-area {
-    width: 40%;
-    /* Key 1: Make this container relative */
-    position: relative; 
-    border: 3px solid #333;
-    background-color: #e0e0e0;
-    height: 500px; /* Set a fixed height for the area */
-    display: flex;
-    justify-content: center;
-    align-items: flex-end; /* Align the mummy to the bottom */
+label {
+    display: block;
+    margin: 8px 0;
 }
 
-#mummy-base {
-    /* Key 2: The base image is the first layer */
-    position: absolute;
-    bottom: 0;
-    width: 250px; /* Example size */
-    height: 450px; /* Example size */
-    background-color: lightgray; /* Placeholder color */
-    /* **TODO: Replace with your actual mummy image** */
-    /* background-image: url('images/mummy_base.png'); 
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center bottom; */
-    z-index: 10; /* Ensures the mummy is always visible */
-}
-
-#costume-layer {
-    /* Key 3: This container holds all costume pieces */
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 20; /* Ensures costumes stack *on top* of the mummy */
-}
-
-/* --- COSTUME PIECES (These will be dynamically added/removed by JS) --- */
-.costume-piece {
-    /* Key 4: All costume pieces must be absolute for precise stacking */
-    position: absolute;
-    background-size: contain;
-    background-repeat: no-repeat;
-    /* You'll adjust top/left/width/height for each specific piece */
-}
-
-/* --- ITEM SELECTION --- */
-.costume-item {
-    padding: 8px;
-    margin: 5px 0;
+button {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    border: 1px solid #aaa;
-    background-color: #ffb3b3; 
-    transition: background-color 0.2s;
 }
 
-.selected {
-    background-color: #aaffaa; 
-    border: 2px solid #006400;
+#result-message {
+    margin-top: 25px;
+    padding: 15px;
+    border: 2px dashed #333;
 }
