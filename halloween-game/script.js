@@ -1,44 +1,153 @@
-// --- Game Data based on DN Articles (The costumes to AVOID) ---
-const BAD_COSTUMES = [
-    [cite_start]"jersey",         // "Boring and lazy" [cite: 25]
-    [cite_start]"angel_devil",    // "Overdone" and seen at least 10 times a year [cite: 17, 14]
-    [cite_start]"kiss_kill",      // "One-year trend" that should have ended [cite: 13]
-    [cite_start]"lifeguard"       // Taking the "easy route" [cite: 26]
+// --- Game Data ---
+const costumeNames = [
+    "Vampire", "Zombie", "Witch", "Ghost",
+    "Mummy", "Pirate", "Robot", "Superhero"
 ];
+// Duplicate for 8 pairs = 16 cards
+const gameCards = [...costumeNames, ...costumeNames];
 
-// --- Main Judgment Function (Triggers when the button is clicked) ---
-function getJudgment() {
-    const costumeRadios = document.getElementsByName('costume');
-    let selectedCostume = null;
-    const resultMessage = document.getElementById('result-message');
-    
-    // 1. Find the selected radio button value
-    for (let radio of costumeRadios) {
-        if (radio.checked) {
-            selectedCostume = radio.value;
-            break;
-        }
+// --- DOM Elements ---
+const landingPage = document.getElementById('landing-page');
+const gameScreen = document.getElementById('game-screen');
+const winScreen = document.getElementById('win-screen');
+const startButton = document.getElementById('start-button');
+const playAgainButton = document.getElementById('play-again-button');
+const gameBoard = document.getElementById('game-board');
+
+// --- Game State Variables ---
+let flippedCards = []; // Stores the two cards currently flipped
+let matchCount = 0;    // Tracks the number of pairs found
+let canFlip = true;    // Controls card clicking while checking a match
+
+// --- Functions ---
+
+/**
+ * Shuffles an array using the Fisher-Yates algorithm.
+ * @param {Array} array - The array to shuffle.
+ */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
+}
 
-    if (!selectedCostume) {
-        resultMessage.innerHTML = "<p style='color: orange;'>❓ You must choose a costume before going to the party!</p>";
+/**
+ * Renders the cards onto the game board.
+ */
+function createBoard() {
+    // Clear the board before creating new cards
+    gameBoard.innerHTML = '';
+    
+    // Shuffle the cards
+    shuffle(gameCards);
+
+    // Create and append the card elements
+    gameCards.forEach((costume, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('card');
+        cardElement.dataset.costume = costume;
+        cardElement.dataset.index = index;
+        cardElement.innerHTML = `
+            <div class="card-inner">
+                <div class="card-back">DN</div>
+                <div class="card-front">${costume}</div>
+            </div>
+        `;
+        
+        cardElement.addEventListener('click', handleCardClick);
+        gameBoard.appendChild(cardElement);
+    });
+}
+
+/**
+ * Handles the click event on a card.
+ * @param {Event} event - The click event.
+ */
+function handleCardClick(event) {
+    const clickedCard = event.currentTarget;
+
+    // Guard clauses: Don't flip if:
+    // 1. We are in the middle of checking a pair (canFlip is false)
+    // 2. The card is already flipped
+    // 3. The card is already matched
+    if (!canFlip || clickedCard.classList.contains('flipped') || clickedCard.classList.contains('matched')) {
         return;
     }
 
-    // 2. Check the judgment
-    if (BAD_COSTUMES.includes(selectedCostume)) {
-        // LOSE CONDITION
-        resultMessage.innerHTML = `
-            <p style="color: red; font-weight: bold;">❌ JUDGMENT FAILED!</p>
-            <p>The writers have seen that costume too many times. [cite_start]You're told it's **too basic** and to try a more **niche idea** next time. [cite: 8]</p>
-            <p><strong>Try again!</strong></p>
-        `;
-    } else {
-        // WIN CONDITION
-        resultMessage.innerHTML = `
-            <p style="color: green; font-weight: bold;">✅ JUDGMENT PASSED!</p>
-            <p>You chose a unique costume! [cite_start]You get **lots of praise** and the writers love that you showed your personality. [cite: 29, 39]</p>
-            <p><strong>Welcome to the Halloweekend party!</strong></p>
-        `;
+    // Flip the card and add to the flippedCards array
+    clickedCard.classList.add('flipped');
+    flippedCards.push(clickedCard);
+
+    // Check for a match after the second card is flipped
+    if (flippedCards.length === 2) {
+        canFlip = false; // Prevent further clicking
+        setTimeout(checkForMatch, 1000); // Check after 1 second
     }
 }
+
+/**
+ * Checks if the two flipped cards are a match.
+ */
+function checkForMatch() {
+    const [card1, card2] = flippedCards;
+    
+    if (card1.dataset.costume === card2.dataset.costume) {
+        // Match found!
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        matchCount++;
+
+        // Check for win condition
+        if (matchCount === costumeNames.length) {
+            setTimeout(showWinScreen, 500);
+        }
+    } else {
+        // No match: flip them back over
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+    }
+
+    // Reset for the next turn
+    flippedCards = [];
+    canFlip = true;
+}
+
+/**
+ * Resets the game state and creates a new board.
+ */
+function resetGame() {
+    flippedCards = [];
+    matchCount = 0;
+    canFlip = true;
+    createBoard();
+}
+
+// --- Screen Management ---
+
+function showScreen(screenToShow) {
+    // Hide all screens
+    landingPage.classList.remove('active');
+    gameScreen.classList.remove('active');
+    winScreen.classList.remove('active');
+    
+    // Show the desired screen
+    screenToShow.classList.add('active');
+}
+
+function showGameScreen() {
+    resetGame();
+    showScreen(gameScreen);
+}
+
+function showWinScreen() {
+    showScreen(winScreen);
+}
+
+// --- Event Listeners ---
+
+startButton.addEventListener('click', showGameScreen);
+playAgainButton.addEventListener('click', showGameScreen);
+
+// Start on the landing page
+showScreen(landingPage);
