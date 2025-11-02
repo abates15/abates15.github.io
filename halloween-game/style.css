@@ -1,3 +1,4 @@
+/* --- BASE LAYOUT (from previous step) --- */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -20,53 +21,62 @@ body {
     min-height: 400px;
 }
 
+/* --- CHARACTER AREA & LAYERING --- */
 #character-area {
     width: 40%;
-    position: relative;
+    /* Key 1: Make this container relative */
+    position: relative; 
     border: 3px solid #333;
     background-color: #e0e0e0;
-    min-height: 500px;
+    height: 500px; /* Set a fixed height for the area */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end; /* Align the mummy to the bottom */
 }
 
 #mummy-base {
-    /* Placeholder for the mummy image */
-    font-size: 24px;
+    /* Key 2: The base image is the first layer */
+    position: absolute;
+    bottom: 0;
+    width: 250px; /* Example size */
+    height: 450px; /* Example size */
+    background-color: lightgray; /* Placeholder color */
+    /* **TODO: Replace with your actual mummy image** */
+    /* background-image: url('images/mummy_base.png'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom; */
+    z-index: 10; /* Ensures the mummy is always visible */
 }
 
+#costume-layer {
+    /* Key 3: This container holds all costume pieces */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 20; /* Ensures costumes stack *on top* of the mummy */
+}
+
+/* --- COSTUME PIECES (These will be dynamically added/removed by JS) --- */
+.costume-piece {
+    /* Key 4: All costume pieces must be absolute for precise stacking */
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    /* You'll adjust top/left/width/height for each specific piece */
+}
+
+/* --- ITEM SELECTION --- */
 .costume-item {
     padding: 8px;
     margin: 5px 0;
     cursor: pointer;
     border: 1px solid #aaa;
-    background-color: #ffb3b3; /* Placeholder color for unselected */
+    background-color: #ffb3b3; 
     transition: background-color 0.2s;
 }
 
-.costume-item:hover {
-    background-color: #ffd6d6;
-}
-
 .selected {
-    background-color: #aaffaa; /* Highlight selected items */
+    background-color: #aaffaa; 
     border: 2px solid #006400;
-}
-
-#continue-button {
-    padding: 15px 30px;
-    font-size: 1.2em;
-    margin-top: 20px;
-    cursor: pointer;
-    background-color: #d9534f;
-    color: white;
-    border: none;
-    border-radius: 5px;
-}
-
-#judgement-message {
-    margin-top: 10px;
-    font-weight: bold;
-    color: red;
 }
