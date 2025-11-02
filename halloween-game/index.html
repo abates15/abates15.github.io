@@ -3,34 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DN Halloweekend Costume Judgment</title>
+    <title>Daily Nebraskan Costume Match</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>DN Halloweekend Costume Judgment</h1>
-        <p>The **Daily Nebraskan** writers are watching! Choose a costume that is **unique** and **not overdone**.</p>
-    </header>
 
-    <div id="game-container">
-        <h2>Choose Your Costume for Halloweekend:</h2>
-        
-        <div id="costume-options">
-            <label><input type="radio" name="costume" value="jersey"> 1. Sports Jersey/Athlete (Boring/Lazy)</label><br>
-            <label><input type="radio" name="costume" value="angel_devil"> 2. Angel or Devil (Overdone Classic)</label><br>
-            <label><input type="radio" name="costume" value="kiss_kill"> 3. Kiss, Marry, Kill Trio (Outdated Trend)</label><br>
-            <label><input type="radio" name="costume" value="lifeguard"> 4. Lifeguard (Easy Route)</label><br>
+    <div id="landing-page" class="screen active">
+        <h1>Daily Nebraskan Costume Match</h1>
+        <button id="start-button">Start</button>
+    </div>
 
-            <label><input type="radio" name="costume" value="minecraft_steve"> 5. 'Minecraft' Steve (Culturally Relevant)</label><br>
-            <label><input type="radio" name="costume" value="iconic_artist"> 6. Iconic Artist Fit (Show Personality)</label><br>
-            <label><input type="radio" name="costume" value="priscilla"> 7. Priscilla Presley Polka Dot Set (Niche Reference)</label><br>
-            <label><input type="radio" name="costume" value="ghost"> 8. Simple Ghost (Approved Alternative)</label><br>
-        </div>
-        
-        <button onclick="getJudgment()">Go to the Party!</button>
-        
-        <div id="result-message">
+    <div id="game-screen" class="screen">
+        <p id="instructions">The DN needs you to match up all of the costumes!</p>
+        <div id="game-board" class="card-grid">
             </div>
+    </div>
+
+    <div id="win-screen" class="screen">
+        <div id="confetti">🎃 👻 🕸️ 🦇</div>
+        <h2>Congrats!</h2>
+        <p>Read more: <a href="https://www.dailynebraskan.com/" target="_blank">https://www.dailynebraskan.com/</a></p>
+        <button id="play-again-button">Play Again</button>
     </div>
 
     <script src="script.js"></script>
