@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halloweekend Quest</title>
+    <title>DN Halloween Party Dress Up</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>🎃 Halloweekend Quest 🧠</h1>
-        <h2>A Daily Nebraskan Learning Game</h2>
 
-        <div id="board-path">
-            </div>
+    <header>
+        <h1>DN Halloween Party Dress Up</h1>
+        <p>Help the mummy choose a costume the writers will approve of! Avoid the 'boring and lazy' ones.</p>
+    </header>
 
-        <div id="message-panel">
-            <p id="message" class="message-text">Press START to begin your Halloweekend Quest!</p>
-            <p id="player-status" class="status-text">Current Position: Space 1 / 12</p>
+    <div id="game-container">
+
+        <div id="costume-choices-left" class="costume-panel">
+            <h3>Bad Costumes (Avoid!)</h3>
+            <div id="jersey" class="costume-item" data-type="bad">Sports Jersey</div>
+            <div id="devil" class="costume-item" data-type="bad">Devil Horns & Wings</div>
+            <div id="kiss-kill" class="costume-item" data-type="bad">Red/Black Dress</div>
         </div>
 
-        <div id="controls">
-            <button id="startButton" onclick="initializeGame()">START GAME</button>
-            
-            <div id="ttt-area" class="hidden">
-                <h3>👻 Tic-Tac-Toe Gate 👻</h3>
-                <p>Win against the computer (O) to earn your dice roll!</p>
-                <div id="ttt-board">
-                    </div>
-            </div>
-
-            <div id="dice-container" class="hidden">
-                <p>Click the dice to roll (1-3):</p>
-                <div id="dice-click-area" onclick="rollDice()">
-                    <i id="dice-icon" class="fas fa-dice-three fa-4x"></i>
-                    <span id="dice-value" class="hidden">3</span>
+        <div id="character-area">
+            <div id="mummy-base"></div>
+            <div id="costume-layer">
                 </div>
-            </div>
-            
-            <button id="rollButton" class="hidden" disabled>ROLL DICE (1-3)</button>
+            <div id="judgement-message"></div>
+        </div>
+
+        <div id="costume-choices-right" class="costume-panel">
+            <h3>Good Costumes (Choose!)</h3>
+            <div id="chappell-roan" class="costume-item" data-type="good">Sparkly Dress & Red Wig</div>
+            <div id="witch" class="costume-item" data-type="good">Witch Hat & Broom</div>
+            <div id="fairy" class="costume-item" data-type="good">Fairy Wings & Wand</div>
         </div>
 
     </div>
+
+    <button id="continue-button">Continue to be Judged!</button>
+
     <script src="script.js"></script>
 </body>
 </html>
