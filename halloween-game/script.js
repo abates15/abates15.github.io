@@ -1,7 +1,14 @@
 // --- Game Data ---
+// Costume names are sourced from the Daily Nebraskan articles:
 const costumeNames = [
-    "Vampire", "Zombie", "Witch", "Ghost",
-    "Mummy", "Pirate", "Robot", "Superhero"
+    "Witch",
+    "Ghost",
+    "Devil",
+    "Angel",
+    "Lifeguard",
+    "Pilot",
+    "Priscilla Presley", // Based on the movie "Priscilla" reference
+    "Happy Gilmore"      // Based on the film of the same name
 ];
 // Duplicate for 8 pairs = 16 cards
 const gameCards = [...costumeNames, ...costumeNames];
@@ -100,54 +107,3 @@ function checkForMatch() {
 
         // Check for win condition
         if (matchCount === costumeNames.length) {
-            setTimeout(showWinScreen, 500);
-        }
-    } else {
-        // No match: flip them back over
-        card1.classList.remove('flipped');
-        card2.classList.remove('flipped');
-    }
-
-    // Reset for the next turn
-    flippedCards = [];
-    canFlip = true;
-}
-
-/**
- * Resets the game state and creates a new board.
- */
-function resetGame() {
-    flippedCards = [];
-    matchCount = 0;
-    canFlip = true;
-    createBoard();
-}
-
-// --- Screen Management ---
-
-function showScreen(screenToShow) {
-    // Hide all screens
-    landingPage.classList.remove('active');
-    gameScreen.classList.remove('active');
-    winScreen.classList.remove('active');
-    
-    // Show the desired screen
-    screenToShow.classList.add('active');
-}
-
-function showGameScreen() {
-    resetGame();
-    showScreen(gameScreen);
-}
-
-function showWinScreen() {
-    showScreen(winScreen);
-}
-
-// --- Event Listeners ---
-
-startButton.addEventListener('click', showGameScreen);
-playAgainButton.addEventListener('click', showGameScreen);
-
-// Start on the landing page
-showScreen(landingPage);
