@@ -5,30 +5,55 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #f4f4f4;
+    /* --- Spooky Background Update --- */
+    background-color: #0d0404; /* Very dark red/black */
+    color: #f4f4f4; /* Light text for contrast */
 }
 
 .screen {
-    display: none; /* Hide all screens by default */
+    display: none; 
     text-align: center;
-    padding: 20px;
+    padding: 30px;
+    /* Screen contrasting background */
+    background-color: rgba(30, 30, 30, 0.9); 
+    border-radius: 10px;
+    /* Subtle spooky red glow */
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); 
+    max-width: 90%;
 }
 
 .screen.active {
-    display: block; /* Show the active screen */
+    display: block; 
+}
+
+/* --- Landing Page Centering --- */
+#landing-page {
+    /* Use flexbox to center content vertically */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; /* Centers items (including button) horizontally */
+}
+
+#landing-page img {
+    max-width: 250px; 
+    height: auto;
+    margin: 20px 0;
+    border-radius: 5px;
+    /* Added a subtle glow to the logo */
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.6); 
 }
 
 /* --- Game Board Styling --- */
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns for 16 cards (4x4) */
+    grid-template-columns: repeat(4, 1fr); 
     gap: 10px;
     max-width: 600px;
     margin-top: 20px;
 }
 
 .card {
-    background-color: #333; /* Card back color */
+    background-color: #333; 
     color: white;
     height: 100px;
     display: flex;
@@ -39,8 +64,8 @@ body {
     border-radius: 5px;
     transform: rotateY(0deg);
     transition: transform 0.5s;
-    user-select: none; /* Prevent text selection */
-    perspective: 1000px; /* For 3D flip effect */
+    user-select: none; 
+    perspective: 1000px; 
     position: relative;
 }
 
@@ -64,17 +89,20 @@ body {
 }
 
 .card-back {
-    background-color: #A30000; /* Daily Nebraskan red/Husker red */
+    background-color: #A30000; 
     transform: rotateY(0deg);
     font-weight: bold;
     font-size: 20px;
 }
 
 .card-front {
-    background-color: #fff; /* Card face color */
+    background-color: #fff; 
     color: #333;
     transform: rotateY(180deg);
     border: 2px solid #A30000;
+    font-size: 12px;
+    padding: 5px;
+    text-align: center;
 }
 
 .card.flipped .card-inner {
@@ -83,26 +111,20 @@ body {
 
 .card.matched .card-inner {
     transform: rotateY(180deg);
-    pointer-events: none; /* Matched cards can't be clicked */
+    pointer-events: none; 
+    opacity: 0.8; 
+}
+
+/* --- Instructions Styling Update --- */
+#instructions {
+    color: #ffaa00; /* Spooky orange/yellow text */
+    font-weight: 800; /* Make it very bold */
+    font-size: 1.1em;
+    padding: 10px;
+    border: 1px dashed #A30000;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* --- Win Screen Styling --- */
 #win-screen h2 {
     color: #A30000;
-    font-size: 3em;
-    margin-bottom: 5px;
-}
-#confetti {
-    font-size: 3em;
-    margin-bottom: 20px;
-}
-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    background-color: #A30000;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-top: 10px;
-}
