@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNL School of Music Comparison</title>
+    
+    <style>
+        /* Basic styles for the body and component */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        /* The main container */
+        .comparison-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            
+            /* --- Responsive Aspect Ratio --- */
+            /* This uses the aspect ratio of your images (1440x958).
+               (958 / 1440) * 100 = 66.527...% 
+               This makes the container responsive while keeping the correct shape.
+            */
+            height: 0;
+            padding-top: 66.53%; 
+        }
+
+        /* Container for each image */
+        .comparison-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* This is key */
+        }
+
+        .comparison-image img {
+            /* The image itself fills the container */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image covers the area */
+            user-select: none; /* Prevents dragging the image itself */
+            pointer-events: none;
+        }
+
+        /* "Before" image (bottom layer) */
+        .comparison-image.before {
+            z-index: 1;
+        }
+
+        /* "After" image (top layer, gets resized) */
+        .comparison-image.after {
+            z-index: 2;
+            width: 50%; /* Start in the middle */
+        }
+
+        /* The slider handle */
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px; /* Width of the line */
+            height: 100%;
+            background: white;
+            z-index: 3;
+            cursor: ew-resize;
+            transform: translateX(-2px); /* Center the line */
+            user-select: none;
+        }
+
+        /* The circular grip on the handle */
+        .slider-grip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #555;
+            transform: translate(-50%, -50%);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            /* SVG for the left/right arrows */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M11 17.5l-6-5.5 6-5.5v11zM13 6.5l6 5.5-6 5.5v-11z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* The headline and instructions */
+        .comparison-header {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            max-width: calc(100% - 30px);
+            pointer-events: none; /* Lets clicks pass through to the slider */
+        }
+        .comparison-header h2 {
+            font-size: 1.2rem;
+            margin: 0 0 5px 0;
+        }
+        .comparison-header p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Labels for the images */
+        .comparison-image::before {
+            content: attr(data-label);
+            position: absolute;
+            bottom: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .comparison-image.before::before {
+            left: 15px;
+        }
+        .comparison-image.after::before {
+            right: 15px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .comparison-header h2 {
+                font-size: 1rem;
+            }
+            .comparison-header p {
+                font-size: 0.8rem;
+            }
+            .slider-grip {
+                width: 36px;
+                height: 36px;
+            }
+            .comparison-image::before {
+                font-size: 0.8rem;
+                bottom: 10px;
+            }
+            .comparison-image.before::before { left: 10px; }
+            .comparison-image.after::before { right: 10px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="comparison-container" id="comparison-container">
+        
+        <div class="comparison-image before" data-label="2014">
+            <img src="campusoctober2014.jpg" alt="UNL Campus October 2014">
+        </div>
+        
+        <div class="comparison-image after" id="image-after" data-label="2025">
+            <img src="campusmarch2025.jpg" alt="UNL Campus March 2025">
+        </div>
+        
+        <div class="slider-handle" id="slider-handle">
+            <div class="slider-grip"></div>
+        </div>
+
+        <div class="comparison-header">
+            <h2>Check out the changes to UNL's School of Music from 2014 to 2025</h2>
+            <p>Drag the slider left and right (or tap and drag) to see the changes.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Self-contained JavaScript for the slider functionality
+        
+        /**
+         * Initializes a single image comparison slider.
+         * @param {string} containerId The ID of the main container element.
+         */
+        function initImageSlider(containerId) {
+            // Get the main elements
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error("Slider container not found:", containerId);
+                return;
+            }
+
+            const afterImage = container.querySelector('.after');
+            const slider = container.querySelector('.slider-handle');
+            
+            // A flag to track if we are dragging
+            let isDragging = false;
+
+            /**
+             * Main function to move the slider and clip the image.
+             * @param {number} x - The horizontal coordinate (clientX) of the mouse/touch.
+             */
+            function moveSlider(x) {
+                const bounds = container.getBoundingClientRect();
+                
+                // Calculate the new left position relative to the container
+                let newLeft = x - bounds.left;
+
+                // Clamp the value between 0 and the container's width
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > bounds.width) newLeft = bounds.width;
+
+                // Calculate the percentage
+                let percent = (newLeft / bounds.width) * 100;
+
+                // Apply the new width to the "after" image container and move the handle
+                afterImage.style.width = percent + '%';
+                slider.style.left = percent + '%';
+            }
+
+            // --- Event Listeners ---
+
+            // Mouse Events
+            slider.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Prevent text selection
+                isDragging = true;
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                moveSlider(e.clientX);
+            });
+
+            // Touch Events
+            slider.addEventListener('touchstart', (e) => {
+                // e.preventDefault(); // Can sometimes interfere with scrolling on a page
+                isDragging = true;
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                // Check if it's a touch event and get the first touch point
+                if (e.touches && e.touches.length > 0) {
+                    moveSlider(e.touches[0].clientX);
+                }
+            });
+        }
+
+        // Wait for the DOM to be fully loaded before running the script
+        document.addEventListener('DOMContentLoaded', () => {
+            initImageSlider('comparison-container');
+        });
+
+    </script>
+
+</body>
+</html>
