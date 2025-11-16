@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Temple Comparison</title>
+    <title>Image Comparison Slider</title>
     
     <style>
         /* Basic styles for the body and component */
@@ -29,17 +29,11 @@
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             
-            /* --- Responsive Aspect Ratio --- */
-            /* The aspect ratio for the new images: Image 1 is 1440x958, Image 2 is 2048x1536.
-               Let's use the aspect ratio of Image 1 (1440x958) which is (958 / 1440) * 100 = 66.527...% 
-               Or for Image 2 (2048x1536) it's (1536 / 2048) * 100 = 75%.
-               To make sure both fit without distortion, it's best if they have the same aspect ratio.
-               If not, one will be stretched or cropped by object-fit: cover.
-               Given the previous example, I'll stick with 66.53% for now. If your images have different ratios,
-               you might want to choose one that makes sense for both, or crop them beforehand.
-            */
+            /* --- Responsive Aspect Ratio ADJUSTMENT --- */
+            /* Changed to 75% (a 4:3 aspect ratio) to better fit the taller image,
+               which should reduce vertical cropping and align the content better. */
             height: 0;
-            padding-top: 66.53%; /* Adjust if your new images have a different aspect ratio */
+            padding-top: 75%; 
         }
 
         /* Container for each image */
@@ -71,7 +65,8 @@
         /* "After" image (top layer) */
         .comparison-image.after {
             z-index: 2;
-            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); /* Start clipped to 50% */
+            /* Start clipped to 50% using the clip-path mask */
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); 
         }
 
         /* The slider handle */
@@ -180,12 +175,12 @@
 
     <div class="comparison-container" id="comparison-container">
         
-        <div class="comparison-image before" data-label="Old Photo">
-            <img src="58.jpg" alt="The Temple Old Photo">
+        <div class="comparison-image before" data-label="Before">
+            <img src="58.jpg" alt="Before Photo">
         </div>
         
-        <div class="comparison-image after" id="image-after" data-label="New Photo">
-            <img src="Screen Shot 2025-11-16 at 11.46.55 AM.jpg" alt="The Temple New Photo">
+        <div class="comparison-image after" id="image-after" data-label="After">
+            <img src="Screen Shot 2025-11-16 at 11.46.55 AM.jpg" alt="After Photo">
         </div>
         
         <div class="slider-handle" id="slider-handle">
@@ -193,7 +188,7 @@
         </div>
 
         <div class="comparison-header">
-            <h2>The Temple: Then and Now</h2>
+            <h2>Image Comparison: Before and After</h2>
             <p>Drag the slider left and right (or tap and drag) to see the changes.</p>
         </div>
 
@@ -228,7 +223,7 @@
 
                 let percent = (newLeft / bounds.width) * 100;
 
-                // Update the clip-path for the 'after' image
+                // Update the clip-path for the 'after' image (the mask)
                 afterImage.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
                 
                 // Move the slider handle
