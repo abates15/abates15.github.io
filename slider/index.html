@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNL School of Music Comparison</title>
+    <title>The Temple Comparison</title>
     
     <style>
         /* Basic styles for the body and component */
@@ -30,14 +30,16 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             
             /* --- Responsive Aspect Ratio --- */
-            /* This uses the aspect ratio of your images (1440x958).
-               (958 / 1440) * 100 = 66.527...% 
-               This makes the container responsive while keeping the correct shape.
+            /* The aspect ratio for the new images: Image 1 is 1440x958, Image 2 is 2048x1536.
+               Let's use the aspect ratio of Image 1 (1440x958) which is (958 / 1440) * 100 = 66.527...% 
+               Or for Image 2 (2048x1536) it's (1536 / 2048) * 100 = 75%.
+               To make sure both fit without distortion, it's best if they have the same aspect ratio.
+               If not, one will be stretched or cropped by object-fit: cover.
+               Given the previous example, I'll stick with 66.53% for now. If your images have different ratios,
+               you might want to choose one that makes sense for both, or crop them beforehand.
             */
             height: 0;
-            padding-top: 66.53%; 
-            
-            /* We don't need overflow:hidden on the main container anymore */
+            padding-top: 66.53%; /* Adjust if your new images have a different aspect ratio */
         }
 
         /* Container for each image */
@@ -47,8 +49,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            
-            /* No overflow:hidden here */
         }
 
         .comparison-image img {
@@ -58,7 +58,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image covers the area */
+            object-fit: cover; /* Ensures image covers the area, cropping if aspect ratios differ */
             user-select: none; /* Prevents dragging the image itself */
             pointer-events: none;
         }
@@ -71,13 +71,7 @@
         /* "After" image (top layer) */
         .comparison-image.after {
             z-index: 2;
-            
-            /* *** THIS IS THE NEW METHOD ***
-              Instead of changing width, we use clip-path.
-              This polygon() function clips the image to a rectangle
-              that starts at 0,0 and goes to 50% width and 100% height.
-            */
-            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); /* Start clipped to 50% */
         }
 
         /* The slider handle */
@@ -186,12 +180,12 @@
 
     <div class="comparison-container" id="comparison-container">
         
-        <div class="comparison-image before" data-label="2014">
-            <img src="campusoctober2014.jpg" alt="UNL Campus October 2014">
+        <div class="comparison-image before" data-label="Old Photo">
+            <img src="thetempleold.jpg" alt="The Temple Old Photo">
         </div>
         
-        <div class="comparison-image after" id="image-after" data-label="2025">
-            <img src="campusmarch2025.jpg" alt="UNL Campus March 2025">
+        <div class="comparison-image after" id="image-after" data-label="New Photo">
+            <img src="thetemplenew.jpg" alt="The Temple New Photo">
         </div>
         
         <div class="slider-handle" id="slider-handle">
@@ -199,21 +193,18 @@
         </div>
 
         <div class="comparison-header">
-            <h2>Check out the changes to UNL's School of Music from 2014 to 2025</h2>
+            <h2>The Temple: Then and Now</h2>
             <p>Drag the slider left and right (or tap and drag) to see the changes.</p>
         </div>
 
     </div>
 
     <script>
-        // Self-contained JavaScript for the slider functionality
-        
         /**
          * Initializes a single image comparison slider.
          * @param {string} containerId The ID of the main container element.
          */
         function initImageSlider(containerId) {
-            // Get the main elements
             const container = document.getElementById(containerId);
             if (!container) {
                 console.error("Slider container not found:", containerId);
@@ -222,8 +213,6 @@
 
             const afterImage = container.querySelector('.after');
             const slider = container.querySelector('.slider-handle');
-            
-            // A flag to track if we are dragging
             let isDragging = false;
 
             /**
@@ -232,33 +221,23 @@
              */
             function moveSlider(x) {
                 const bounds = container.getBoundingClientRect();
-                
-                // Calculate the new left position relative to the container
                 let newLeft = x - bounds.left;
 
-                // Clamp the value between 0 and the container's width
                 if (newLeft < 0) newLeft = 0;
                 if (newLeft > bounds.width) newLeft = bounds.width;
 
-                // Calculate the percentage
                 let percent = (newLeft / bounds.width) * 100;
 
-                // 
-                // *** THIS IS THE NEW METHOD ***
-                // Instead of changing width, we change the clip-path polygon.
-                // This "masks" the top image from 0% to the new 'percent'
-                //
+                // Update the clip-path for the 'after' image
                 afterImage.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
                 
-                // We still move the slider handle
+                // Move the slider handle
                 slider.style.left = percent + '%';
             }
 
-            // --- Event Listeners ---
-
             // Mouse Events
             slider.addEventListener('mousedown', (e) => {
-                e.preventDefault(); // Prevent text selection
+                e.preventDefault();
                 isDragging = true;
             });
 
@@ -282,15 +261,12 @@
 
             document.addEventListener('touchmove', (e) => {
                 if (!isDragging) return; 
-                
-                // Check if it's a touch event and get the first touch point
                 if (e.touches && e.touches.length > 0) {
                     moveSlider(e.touches[0].clientX);
                 }
             });
         }
 
-        // Wait for the DOM to be fully loaded before running the script
         document.addEventListener('DOMContentLoaded', () => {
             initImageSlider('comparison-container');
         });
