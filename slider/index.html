@@ -26,7 +26,6 @@
             width: 90%;
             max-width: 900px;
             margin: 20px auto;
-            overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             
@@ -37,6 +36,8 @@
             */
             height: 0;
             padding-top: 66.53%; 
+            
+            /* We don't need overflow:hidden on the main container anymore */
         }
 
         /* Container for each image */
@@ -46,7 +47,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* This is key */
+            
+            /* No overflow:hidden here */
         }
 
         .comparison-image img {
@@ -66,10 +68,16 @@
             z-index: 1;
         }
 
-        /* "After" image (top layer, gets resized) */
+        /* "After" image (top layer) */
         .comparison-image.after {
             z-index: 2;
-            width: 50%; /* Start in the middle */
+            
+            /* *** THIS IS THE NEW METHOD ***
+              Instead of changing width, we use clip-path.
+              This polygon() function clips the image to a rectangle
+              that starts at 0,0 and goes to 50% width and 100% height.
+            */
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
         }
 
         /* The slider handle */
@@ -148,6 +156,8 @@
         }
         .comparison-image.after::before {
             right: 15px;
+            /* We need to override the clip-path for the label */
+            clip-path: none !important;
         }
 
         /* Mobile adjustments */
@@ -233,8 +243,14 @@
                 // Calculate the percentage
                 let percent = (newLeft / bounds.width) * 100;
 
-                // Apply the new width to the "after" image container and move the handle
-                afterImage.style.width = percent + '%';
+                // 
+                // *** THIS IS THE NEW METHOD ***
+                // Instead of changing width, we change the clip-path polygon.
+                // This "masks" the top image from 0% to the new 'percent'
+                //
+                afterImage.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+                
+                // We still move the slider handle
                 slider.style.left = percent + '%';
             }
 
@@ -257,7 +273,6 @@
 
             // Touch Events
             slider.addEventListener('touchstart', (e) => {
-                // e.preventDefault(); // Can sometimes interfere with scrolling on a page
                 isDragging = true;
             }, { passive: true });
 
@@ -266,8 +281,6 @@
             });
 
             document.addEventListener('touchmove', (e) => {
-                // *** THIS IS THE FIX ***
-                // The typo was `return.` - it is now `return;`
                 if (!isDragging) return; 
                 
                 // Check if it's a touch event and get the first touch point
